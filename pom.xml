@@ -8,14 +8,19 @@
 		<version>2.6.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.github.paulosalonso</groupId>
 	<artifactId>currencyconverter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Currency Converter</name>
 	<description>API for currency conversion</description>
+
 	<properties>
 		<java.version>11</java.version>
+		<sonar.organization>paulosalonso</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
