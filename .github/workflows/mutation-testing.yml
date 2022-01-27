@@ -28,3 +28,9 @@ jobs:
 
       - name: Run mutation tests
         run: mvn -B verify --file pom.xml -DskipTests
+
+      - name: Upload Pitest artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: pitest
+          path: target/pit-reports
