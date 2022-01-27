@@ -20,7 +20,7 @@
 		<sonar.organization>paulosalonso</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-		<line.coverage>1.00</line.coverage>
+		<line.coverage>0.59</line.coverage>
 		<branch.coverage>1.00</branch.coverage>
 		<mutation.threshold>100</mutation.threshold>
 	</properties>
@@ -28,13 +28,23 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-inline</artifactId>
 		</dependency>
 	</dependencies>
 
