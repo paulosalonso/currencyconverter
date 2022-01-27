@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class WebClientConfigurationTest {
+class WebClientConfigurationTest {
 
   private WebClientConfiguration webClientConfiguration = new WebClientConfiguration();
 

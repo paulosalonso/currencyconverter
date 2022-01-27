@@ -26,7 +26,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
-public class ExchangeRateApiClientTest {
+class ExchangeRateApiClientTest {
 
   private static final String PATH = "/v1/latest";
 
