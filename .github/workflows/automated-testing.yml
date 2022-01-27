@@ -28,3 +28,9 @@ jobs:
 
       - name: Run unit and integrated tests
         run: mvn -B verify --file pom.xml -DskipMutation
+
+      - name: Upload JaCoCo artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: jacoco
+          path: target/site/jacoco
