@@ -22,7 +22,7 @@
 
 		<line.coverage>0.35</line.coverage>
 		<branch.coverage>1.00</branch.coverage>
-		<mutation.threshold>30</mutation.threshold>
+		<mutation.threshold>8</mutation.threshold>
 	</properties>
 
 	<dependencies>
