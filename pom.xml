@@ -20,9 +20,9 @@
 		<sonar.organization>paulosalonso</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-		<line.coverage>0.35</line.coverage>
+		<line.coverage>0.73</line.coverage>
 		<branch.coverage>1.00</branch.coverage>
-		<mutation.threshold>8</mutation.threshold>
+		<mutation.threshold>75</mutation.threshold>
 	</properties>
 
 	<dependencies>
