@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.service.port;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -12,7 +10,8 @@ import static org.mockito.Mockito.when;
 import com.github.paulosalonso.currencyconverter.client.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.model.Currency;
-import com.github.paulosalonso.currencyconverter.model.ExchangeRateRequest;
+import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -40,40 +39,35 @@ class ExchangeRateApiImplTest {
   @Test
   void givenValidParametersWhenGetCurrentExchangeRateThenReturnExchangeRateInstance() {
     final var userId = "user-id";
-    final var fromCurrency = EUR;
-    final var toCurrency = BRL;
+    final var fromCurrency = "EUR";
+    final var toCurrency = "BRL";
 
     final var dto = ExchangeRateResponseDto.builder()
         .success(true)
         .timestamp(ZonedDateTime.now(UTC).toEpochSecond())
         .date(LocalDate.now())
-        .base(fromCurrency.name())
-        .rates(Map.of(toCurrency.name(), 5.0))
+        .base(fromCurrency)
+        .rates(Map.of(toCurrency, 5.0))
         .build();
     final var monoDto = Mono.just(dto);
 
-    when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency.name(), toCurrency.name()))
+    when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
         .thenReturn(monoDto);
 
-    final var request = ExchangeRateRequest.builder()
-        .userId(userId)
-        .fromCurrency(fromCurrency)
-        .toCurrency(toCurrency)
-        .build();
-
+    final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
     final var result = exchangeRateApiPort.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
         .assertNext(exchangeRate -> {
           assertThat(exchangeRate.getDateTime().toEpochSecond()).isEqualTo(dto.getTimestamp());
-          assertThat(exchangeRate.getFromCurrency()).isEqualTo(Currency.valueOf(fromCurrency.name()));
-          assertThat(exchangeRate.getToCurrency()).isEqualTo(Currency.valueOf(toCurrency.name()));
-          assertThat(exchangeRate.getRate()).isEqualTo(dto.getRates().get(toCurrency.name()));
+          assertThat(exchangeRate.getFromCurrency()).isEqualTo(Currency.valueOf(fromCurrency));
+          assertThat(exchangeRate.getToCurrency()).isEqualTo(Currency.valueOf(toCurrency));
+          assertThat(exchangeRate.getRate()).isEqualTo(dto.getRates().get(toCurrency));
         })
         .expectComplete()
         .verify();
 
-    verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency.name(), toCurrency.name());
+    verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
     verifyNoMoreInteractions(exchangeRateApiClient);
   }
 
@@ -83,19 +77,15 @@ class ExchangeRateApiImplTest {
       Throwable clientError, Class<Throwable> expectedError, String expectedErrorMessage) {
 
     final var userId = "user-id";
-    final var fromCurrency = EUR;
-    final var toCurrency = BRL;
+    final var fromCurrency = "EUR";
+    final var toCurrency = "BRL";
 
     final Mono<ExchangeRateResponseDto> errorMono = Mono.error(clientError);
 
-    when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency.name(), toCurrency.name()))
+    when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
         .thenReturn(errorMono);
 
-    final var request = ExchangeRateRequest.builder()
-        .userId(userId)
-        .fromCurrency(fromCurrency)
-        .toCurrency(toCurrency)
-        .build();
+    final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
 
     final var result = exchangeRateApiPort.getCurrentExchangeRate(request);
 
@@ -106,7 +96,7 @@ class ExchangeRateApiImplTest {
         })
         .verify();
 
-    verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency.name(), toCurrency.name());
+    verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
   }
 
   private static Stream<Arguments> getClientExceptions() {
