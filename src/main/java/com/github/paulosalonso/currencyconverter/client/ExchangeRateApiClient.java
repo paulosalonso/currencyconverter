@@ -47,16 +47,16 @@ public class ExchangeRateApiClient {
     final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
 
     return error.doOnSuccess(this::logError)
-        .map(exchangeRateErrorDto ->
-            new IllegalArgumentException(exchangeRateErrorDto.getError().getCode()));
+        .flatMap(errorDto ->
+            Mono.error(new IllegalArgumentException(errorDto.getError().getCode())));
   }
 
   private Mono<Throwable> handle5xxError(ClientResponse clientResponse) {
     final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
 
     return error.doOnSuccess(this::logError)
-        .map(exchangeRateErrorDto ->
-            new RuntimeException(exchangeRateErrorDto.getError().getCode()));
+        .flatMap(errorDto ->
+            Mono.error(new RuntimeException(errorDto.getError().getCode())));
   }
 
   private void logError(ExchangeRateErrorDto exchangeRateErrorDto) {
