@@ -6,7 +6,7 @@ import com.github.paulosalonso.currencyconverter.client.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
-import com.github.paulosalonso.currencyconverter.model.ExchangeRateRequest;
+import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class ExchangeRateApiPort implements ExchangeRatePort {
   }
 
   @Override
-  public Mono<ExchangeRate> getCurrentExchangeRate(ExchangeRateRequest request) {
+  public Mono<ExchangeRate> getCurrentExchangeRate(ExchangeRequest request) {
     final var userId = request.getUserId();
     final var fromCurrency = request.getFromCurrency().name();
     final var toCurrency = request.getToCurrency().name();

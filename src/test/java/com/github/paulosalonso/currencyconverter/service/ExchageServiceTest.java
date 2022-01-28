@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
-import com.github.paulosalonso.currencyconverter.model.ExchangeRateRequest;
+import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.service.port.ExchangeRatePort;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -20,22 +20,17 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-class ConverterServiceTest {
+class ExchageServiceTest {
 
   @InjectMocks
-  private ConverterService converterService;
+  private ExchageService exchageService;
 
   @Mock
   private ExchangeRatePort exchangeRatePort;
 
   @Test
   void givenARequestWhenConvertThenReturnAExchangeRateTransaction() {
-    final var request = ExchangeRateRequest.builder()
-        .userId("user-id")
-        .fromCurrency(EUR)
-        .toCurrency(BRL)
-        .amount(BigDecimal.TEN)
-        .build();
+    final var request = ExchangeRequest.of("user-id", "EUR", BigDecimal.TEN, "BRL");
 
     final var eurToBrlRate = 6.1;
 
@@ -50,7 +45,7 @@ class ConverterServiceTest {
 
     when(exchangeRatePort.getCurrentExchangeRate(request)).thenReturn(exchangeRateMono);
 
-    final var result = converterService.convert(request);
+    final var result = exchageService.convert(request);
 
     StepVerifier.create(result)
         .assertNext(transaction -> {
