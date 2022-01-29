@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: jar
-          path: target/${{ env.APPLICATION_NAME }}-${VERSION}.jar
+          path: target/${{ env.APPLICATION_NAME }}-${{ env.VERSION }}.jar
 
       - name: Login to Heroku Container registry
         env:
