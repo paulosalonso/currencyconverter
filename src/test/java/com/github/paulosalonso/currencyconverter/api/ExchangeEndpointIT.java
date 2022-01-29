@@ -9,7 +9,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.paulosalonso.currencyconverter.BaseIT;
 import com.github.paulosalonso.currencyconverter.api.dto.ExchangeRequestDto;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Map;

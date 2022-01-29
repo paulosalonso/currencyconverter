@@ -1,10 +1,10 @@
-package com.github.paulosalonso.currencyconverter.client;
+package com.github.paulosalonso.currencyconverter.repository.http;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateErrorDto;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

@@ -7,8 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.github.paulosalonso.currencyconverter.client.ExchangeRateApiClient;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.ExchangeRateApiPort;
+import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import java.math.BigDecimal;

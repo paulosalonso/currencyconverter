@@ -1,12 +1,13 @@
-package com.github.paulosalonso.currencyconverter.service.port;
+package com.github.paulosalonso.currencyconverter.repository;
 
 import static java.time.ZoneOffset.UTC;
 
-import com.github.paulosalonso.currencyconverter.client.ExchangeRateApiClient;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
+import com.github.paulosalonso.currencyconverter.service.port.ExchangeRatePort;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;

@@ -9,9 +9,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateErrorDto;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateErrorDto.Error;
-import com.github.paulosalonso.currencyconverter.client.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto.Error;
+import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import java.net.URI;
 import java.util.function.Function;
 import java.util.function.Predicate;

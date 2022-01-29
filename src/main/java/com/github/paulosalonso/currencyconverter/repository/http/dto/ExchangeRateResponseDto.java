@@ -1,6 +1,8 @@
-package com.github.paulosalonso.currencyconverter.client.dto;
+package com.github.paulosalonso.currencyconverter.repository.http.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDate;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,18 +17,10 @@ import lombok.ToString;
 @Builder
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ExchangeRateErrorDto {
-
-  private Error error;
-
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  @Builder
-  @ToString
-  public static class Error {
-    private String code;
-    private String message;
-  }
+public class ExchangeRateResponseDto {
+  private boolean success;
+  private long timestamp;
+  private String base;
+  private LocalDate date;
+  private Map<String, Double> rates;
 }
