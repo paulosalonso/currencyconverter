@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
-import com.github.paulosalonso.currencyconverter.service.port.ExchangeRatePort;
+import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class ExchageServiceTest {
   private ExchageService exchageService;
 
   @Mock
-  private ExchangeRatePort exchangeRatePort;
+  private ExchangePort exchangePort;
 
   @Test
   void givenARequestWhenConvertThenReturnAExchangeRateTransaction() {
@@ -43,7 +43,7 @@ class ExchageServiceTest {
 
     final var exchangeRateMono = Mono.just(exchangeRate);
 
-    when(exchangeRatePort.getCurrentExchangeRate(request)).thenReturn(exchangeRateMono);
+    when(exchangePort.getCurrentExchangeRate(request)).thenReturn(exchangeRateMono);
 
     final var result = exchageService.convert(request);
 

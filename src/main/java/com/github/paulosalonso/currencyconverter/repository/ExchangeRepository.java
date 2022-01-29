@@ -7,7 +7,7 @@ import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRat
 import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
-import com.github.paulosalonso.currencyconverter.service.port.ExchangeRatePort;
+import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
-public class ExchangeRateApiPort implements ExchangeRatePort {
+public class ExchangeRepository implements ExchangePort {
 
   private static final Map<String, String> ERROR_TRANSLATIONS = Map.of(
       "invalid_access_key", "Invalid user id",
@@ -25,7 +25,7 @@ public class ExchangeRateApiPort implements ExchangeRatePort {
 
   private final ExchangeRateApiClient exchangeRateApiClient;
 
-  public ExchangeRateApiPort(final ExchangeRateApiClient exchangeRateApiClient) {
+  public ExchangeRepository(final ExchangeRateApiClient exchangeRateApiClient) {
     this.exchangeRateApiClient = exchangeRateApiClient;
   }
 

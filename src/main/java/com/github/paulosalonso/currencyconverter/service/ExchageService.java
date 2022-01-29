@@ -3,7 +3,7 @@ package com.github.paulosalonso.currencyconverter.service;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
-import com.github.paulosalonso.currencyconverter.service.port.ExchangeRatePort;
+import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -14,16 +14,16 @@ import reactor.core.publisher.Mono;
 @Service
 public class ExchageService {
 
-  private final ExchangeRatePort exchangeRatePort;
+  private final ExchangePort exchangePort;
 
-  public ExchageService(final ExchangeRatePort exchangeRatePort) {
-    this.exchangeRatePort = exchangeRatePort;
+  public ExchageService(final ExchangePort exchangePort) {
+    this.exchangePort = exchangePort;
   }
 
   public Mono<ExchangeTransaction> convert(final ExchangeRequest request) {
     log.info("Starting conversion: {}", request);
 
-    return exchangeRatePort.getCurrentExchangeRate(request)
+    return exchangePort.getCurrentExchangeRate(request)
         .map(exchangeRate -> map(request, exchangeRate));
   }
 
