@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.github.paulosalonso.currencyconverter.repository.ExchangeRateApiPort;
+import com.github.paulosalonso.currencyconverter.repository.ExchangeRepository;
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.model.Currency;
@@ -29,10 +29,10 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
-class ExchangeRateApiImplTest {
+class ExchangeRepositoryTest {
 
   @InjectMocks
-  private ExchangeRateApiPort exchangeRateApiPort;
+  private ExchangeRepository exchangeRateApiPort;
 
   @Mock
   private ExchangeRateApiClient exchangeRateApiClient;
