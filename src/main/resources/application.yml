@@ -1,3 +1,11 @@
 spring:
   feign:
     exchange-rate-api-base-url: ${EXCHANGE_RATE_API_URL:http://api.exchangeratesapi.io}
+  r2dbc:
+    url: r2dbc:h2:mem:///currencyconverter
+    username: sa
+    password:
+  flyway:
+    url: jdbc:h2:mem:currencyconverter;DB_CLOSE_DELAY=-1
+    user: sa
+    password:
