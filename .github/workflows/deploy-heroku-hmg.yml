@@ -37,13 +37,10 @@ jobs:
       - name: Updating project version in pom.xml with branch-name
         run: |
           echo Version: ${VERSION}
-          mvn release:update-versions -DdevelopmentVersion=${VERSION}
+          mvn versions:set -DnewVersion=${{ env.VERSION }}
 
       - name: Building package with Maven
         run: mvn -B package -DskipTests -DskipMutation
-
-      - name: Show directory content
-        run: cd target && ls
 
       - name: Uploading artifact
         uses: actions/upload-artifact@v1

@@ -24,6 +24,7 @@
 		<branch.coverage>1.00</branch.coverage>
 		<mutation.threshold>100</mutation.threshold>
 		<mockserver.version>5.11.2</mockserver.version>
+		<versions-maven-plugin.version>2.9.0</versions-maven-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -80,6 +81,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>${versions-maven-plugin.version}</version>
 			</plugin>
 
 			<plugin>
