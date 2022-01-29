@@ -40,13 +40,13 @@ jobs:
           mvn release:update-versions -DdevelopmentVersion=${VERSION}
 
       - name: Building package with Maven
-        run: mvn -B package
+        run: mvn -B package -DskipTests -DskipMutation
 
       - name: Uploading artifact
         uses: actions/upload-artifact@v1
         with:
           name: jar
-          path: /target/*.jar
+          path: target/${{ env.APPLICATION_NAME }}-${VERSION}.jar
 
       - name: Login to Heroku Container registry
         env:
