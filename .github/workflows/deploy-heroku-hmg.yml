@@ -34,7 +34,7 @@ jobs:
       - name: Extracting tag
         run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
-      - name: Updating project version in pom.xml with branch-name
+      - name: Updating project version in pom.xml with tag name
         run: |
           echo Version: ${VERSION}
           mvn versions:set -DnewVersion=${{ env.VERSION }}
@@ -57,4 +57,4 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ env.HEROKU_APPLICATION_NAME }}
-        run: heroku plugins:install java && heroku create --no-remote && heroku deploy:jar target/*.jar --app ${{ env.HEROKU_APPLICATION_NAME }}
+        run: heroku plugins:install java && heroku create --no-remote && heroku deploy:jar target/${{ env.APPLICATION_NAME }}-${{ env.VERSION }}.jar --app ${{ env.HEROKU_APPLICATION_NAME }}
