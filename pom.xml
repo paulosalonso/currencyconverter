@@ -23,6 +23,7 @@
 		<line.coverage>1.00</line.coverage>
 		<branch.coverage>1.00</branch.coverage>
 		<mutation.threshold>100</mutation.threshold>
+		<mockserver.version>5.11.2</mockserver.version>
 	</properties>
 
 	<dependencies>
@@ -51,6 +52,25 @@
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mock-server</groupId>
+			<artifactId>mockserver-junit-jupiter</artifactId>
+			<version>${mockserver.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mock-server</groupId>
+			<artifactId>mockserver-spring-test-listener</artifactId>
+			<version>${mockserver.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
