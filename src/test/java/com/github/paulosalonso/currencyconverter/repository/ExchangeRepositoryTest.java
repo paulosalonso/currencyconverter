@@ -8,6 +8,7 @@ import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -15,10 +16,13 @@ import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
 import com.github.paulosalonso.currencyconverter.repository.database.ExchangeTransactionEntityRepository;
+import com.github.paulosalonso.currencyconverter.repository.database.entity.ExchangeTransactionEntity;
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper;
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -30,6 +34,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -74,6 +79,7 @@ class ExchangeRepositoryTest {
 
     verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
     verifyNoMoreInteractions(exchangeRateApiClient);
+    verifyNoInteractions(exchangeTransactionEntityRepository);
   }
 
   @Test
@@ -96,6 +102,8 @@ class ExchangeRepositoryTest {
         .verify();
 
     verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
+    verifyNoMoreInteractions(exchangeRateApiClient);
+    verifyNoInteractions(exchangeTransactionEntityRepository);
   }
 
   @Test
@@ -126,6 +134,38 @@ class ExchangeRepositoryTest {
         .verify();
 
     verify(exchangeTransactionEntityRepository).save(entity);
+    verifyNoMoreInteractions(exchangeTransactionEntityRepository);
+    verifyNoInteractions(exchangeRateApiClient);
+  }
+
+  @Test
+  void givenAnUserIdWhenFindAllByUserIdThenReturnExchangeTransactionFlux() {
+    final var userId = "user-id";
+    final var entity = ExchangeTransactionEntity.builder()
+        .id(UUID.randomUUID().toString())
+        .userId("user-id")
+        .fromCurrency(EUR)
+        .originalAmount(BigDecimal.ZERO)
+        .toCurrency(BRL)
+        .convertedAmount(BigDecimal.ONE)
+        .rate(BigDecimal.TEN)
+        .timestamp(Instant.now(Clock.systemUTC()))
+        .build();
+    final var flux = Flux.just(entity);
+
+    when(exchangeTransactionEntityRepository.findAllByUserId(userId)).thenReturn(flux);
+
+    final var result = exchangeRepository.getAllByUserId(userId);
+
+    StepVerifier.create(result)
+        .assertNext(exchangeTransaction ->
+            assertThat(exchangeTransaction).isEqualTo(toModel(entity)))
+        .expectComplete()
+        .verify();
+
+    verify(exchangeTransactionEntityRepository).findAllByUserId(userId);
+    verifyNoMoreInteractions(exchangeTransactionEntityRepository);
+    verifyNoInteractions(exchangeRateApiClient);
   }
 
 }

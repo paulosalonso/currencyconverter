@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -46,6 +47,12 @@ public class ExchangeRepository implements ExchangePort {
   @Override
   public Mono<ExchangeTransaction> save(ExchangeTransaction transaction) {
     return exchangeTransactionEntityRepository.save(toEntity(transaction))
+        .map(ExchangeTransactionEntityMapper::toModel);
+  }
+
+  @Override
+  public Flux<ExchangeTransaction> getAllByUserId(String userId) {
+    return exchangeTransactionEntityRepository.findAllByUserId(userId)
         .map(ExchangeTransactionEntityMapper::toModel);
   }
 }
