@@ -80,7 +80,7 @@ public class ExchangeEndpointIT extends BaseIT {
         .body("[0].toCurrency", equalTo("BRL"))
         .body("[0].convertedAmount", equalTo(60.1F))
         .body("[0].rate", equalTo(6.01F))
-        .body("[0].dateTime", equalTo("2022-01-30T22:30:00Z"));
+        .body("[0].dateTime", equalTo("2022-01-30T19:30:00Z"));
   }
 
   @Test
