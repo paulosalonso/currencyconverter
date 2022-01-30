@@ -26,9 +26,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -78,16 +76,13 @@ class ExchangeRepositoryTest {
     verifyNoMoreInteractions(exchangeRateApiClient);
   }
 
-  @ParameterizedTest
-  @MethodSource("getClientExceptions")
-  void givenParametersWhenOccursAnErrorGettingExchangeRateThenReturnThrowableMono(
-      Throwable clientError, Class<Throwable> expectedError, String expectedErrorMessage) {
-
+  @Test
+  void givenParametersWhenOccursAnErrorGettingExchangeRateThenReturnThrowableMono() {
     final var userId = "user-id";
     final var fromCurrency = "EUR";
     final var toCurrency = "BRL";
-
-    final Mono<ExchangeRateResponseDto> errorMono = Mono.error(clientError);
+    final var exception = new RuntimeException();
+    final Mono<ExchangeRateResponseDto> errorMono = Mono.error(exception);
 
     when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
         .thenReturn(errorMono);
@@ -97,10 +92,7 @@ class ExchangeRepositoryTest {
     final var result = exchangeRepository.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
-        .expectErrorSatisfies(throwable -> {
-          assertThat(throwable).isExactlyInstanceOf(expectedError);
-          assertThat(throwable.getMessage()).isEqualTo(expectedErrorMessage);
-        })
+        .expectErrorSatisfies(resultException -> assertThat(resultException).isSameAs(exception))
         .verify();
 
     verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
@@ -134,15 +126,6 @@ class ExchangeRepositoryTest {
         .verify();
 
     verify(exchangeTransactionEntityRepository).save(entity);
-  }
-
-  private static Stream<Arguments> getClientExceptions() {
-    return Stream.of(
-        arguments(new IllegalArgumentException("invalid_access_key"), IllegalArgumentException.class, "Invalid user id"),
-        arguments(new IllegalArgumentException("invalid_base_currency"), IllegalArgumentException.class, "Invalid base currency"),
-        arguments(new IllegalArgumentException("base_currency_access_restricted"), IllegalArgumentException.class, "Base currency is not available"),
-        arguments(new IllegalArgumentException("invalid_currency_codes"), IllegalArgumentException.class, "Invalid target currency"),
-        arguments(new RuntimeException("unknown_error"), RuntimeException.class, "Unknown error"));
   }
 
 }

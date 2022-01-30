@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,12 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 public class ExchangeRateApiClient {
+
+  private static final Map<String, String> ERROR_TRANSLATIONS = Map.of(
+      "invalid_access_key", "Invalid user id",
+      "invalid_base_currency", "Invalid base currency",
+      "base_currency_access_restricted", "Base currency is not available",
+      "invalid_currency_codes", "Invalid target currency");
 
   private static final String PATH = "/v1/latest";
 
@@ -47,20 +54,27 @@ public class ExchangeRateApiClient {
     final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
 
     return error.doOnSuccess(this::logError)
-        .flatMap(errorDto ->
-            Mono.error(new IllegalArgumentException(errorDto.getError().getCode())));
+        .map(this::translateErrorMessage)
+        .map(IllegalArgumentException::new)
+        .flatMap(Mono::error);
   }
 
   private Mono<Throwable> handle5xxError(ClientResponse clientResponse) {
     final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
 
     return error.doOnSuccess(this::logError)
-        .flatMap(errorDto ->
-            Mono.error(new RuntimeException(errorDto.getError().getCode())));
+        .map(this::translateErrorMessage)
+        .map(RuntimeException::new)
+        .flatMap(Mono::error);
   }
 
   private void logError(ExchangeRateErrorDto exchangeRateErrorDto) {
     log.error("Error getting exchange rate: {} - {}",
         exchangeRateErrorDto.getError().getCode(), exchangeRateErrorDto.getError().getMessage());
+  }
+
+  private String translateErrorMessage(ExchangeRateErrorDto errorDto) {
+    final var translation = ERROR_TRANSLATIONS.get(errorDto.getError().getCode());
+    return translation == null ? "Unknown error" : translation;
   }
 }

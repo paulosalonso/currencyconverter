@@ -1,6 +1,7 @@
 package com.github.paulosalonso.currencyconverter.repository.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -9,15 +10,22 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
+import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto.Error;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
-import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import java.net.URI;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,8 +75,8 @@ class ExchangeRateApiClientTest {
   @Test
   void givenUserIdAndCurrenciesWhenGetCurrentExchangeRateThenReturnMono() {
     final var userId = "user-id";
-    final var fromCurrency = "from-currency";
-    final var toCurrency = "to-currency";
+    final var fromCurrency = "EUR";
+    final var toCurrency = "BRL";
 
     when(webClient.method(GET)).thenReturn(requestBodyUriSpec);
     when(uriBuilder.path(PATH)).thenReturn(uriBuilder);
@@ -85,9 +93,8 @@ class ExchangeRateApiClientTest {
     when(responseSpec.onStatus(any(Predicate.class), any(Function.class))).thenReturn(responseSpec);
     when(responseSpec.bodyToMono(ExchangeRateResponseDto.class)).thenReturn(response);
 
-    final var result = exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency);
-
-    assertThat(result).isEqualTo(response);
+    assertThat(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
+            .isSameAs(response);
 
     verify(webClient).method(GET);
     verify(uriBuilder).path(PATH);
@@ -110,8 +117,8 @@ class ExchangeRateApiClientTest {
     final var toCurrency = "to-currency";
     final var exchangeRateErrorDto = ExchangeRateErrorDto.builder()
         .error(Error.builder()
-            .code("code")
-            .message("message")
+            .code("invalid_base_currency")
+            .message("invalid_base_currency")
             .build())
         .build();
     final var exchangeRateErrorDtoMono = Mono.just(exchangeRateErrorDto);
@@ -140,7 +147,7 @@ class ExchangeRateApiClientTest {
     StepVerifier.create(result)
         .expectErrorSatisfies(throwable -> {
           assertThat(throwable).isExactlyInstanceOf(IllegalArgumentException.class);
-          assertThat(throwable.getMessage()).isEqualTo(exchangeRateErrorDto.getError().getCode());
+          assertThat(throwable.getMessage()).isEqualTo("Invalid base currency");
         })
         .verify();
 
@@ -161,8 +168,8 @@ class ExchangeRateApiClientTest {
     final var toCurrency = "to-currency";
     final var exchangeRateErrorDto = ExchangeRateErrorDto.builder()
         .error(Error.builder()
-            .code("code")
-            .message("message")
+            .code("internal-server-error")
+            .message("internal-server-error")
             .build())
         .build();
     final var exchangeRateErrorDtoMono = Mono.just(exchangeRateErrorDto);
@@ -191,7 +198,7 @@ class ExchangeRateApiClientTest {
     StepVerifier.create(result)
         .expectErrorSatisfies(throwable -> {
           assertThat(throwable).isExactlyInstanceOf(RuntimeException.class);
-          assertThat(throwable.getMessage()).isEqualTo(exchangeRateErrorDto.getError().getCode());
+          assertThat(throwable.getMessage()).isEqualTo("Unknown error");
         })
         .verify();
 
@@ -203,5 +210,59 @@ class ExchangeRateApiClientTest {
     verify(responseSpec, times(2)).onStatus(any(Predicate.class), any(Function.class));
     verify(responseSpec).bodyToMono(ExchangeRateResponseDto.class);
     verify(clientResponse).body(any(BodyExtractor.class));
+  }
+
+  @ParameterizedTest
+  @MethodSource("getClientErrorMessages")
+  void givenParametersWhenOccursAnErrorGettingExchangeRateThenReturnThrowableMono(
+      String clientErrorMessage, String expectedErrorMessage) {
+
+    final var userId = "user-id";
+    final var fromCurrency = "from-currency";
+    final var toCurrency = "to-currency";
+    final var exchangeRateErrorDto = ExchangeRateErrorDto.builder()
+        .error(Error.builder()
+            .code(clientErrorMessage)
+            .message(clientErrorMessage)
+            .build())
+        .build();
+    final var exchangeRateErrorDtoMono = Mono.just(exchangeRateErrorDto);
+
+    when(webClient.method(GET)).thenReturn(requestBodyUriSpec);
+    when(requestBodyUriSpec.uri(any(Function.class))).thenReturn(requestBodySpec);
+    when(requestBodySpec.accept(APPLICATION_JSON)).thenReturn(requestBodySpec);
+    when(requestBodySpec.contentType(APPLICATION_JSON)).thenReturn(requestBodySpec);
+    when(requestBodySpec.retrieve()).thenReturn(responseSpec);
+    when(clientResponse.body(any(BodyExtractor.class))).thenReturn(exchangeRateErrorDtoMono);
+    when(responseSpec.onStatus(any(Predicate.class), any(Function.class)))
+        .thenAnswer(invocationOnMock -> {
+          final var predicate = invocationOnMock.getArgument(0, Predicate.class);
+          final var function = invocationOnMock.getArgument(1, Function.class);
+
+          if (predicate.test(HttpStatus.BAD_REQUEST)) {
+            final var errorMono = (Mono) function.apply(clientResponse);
+            when(responseSpec.bodyToMono(ExchangeRateResponseDto.class)).thenReturn(errorMono);
+          }
+
+          return responseSpec;
+        });
+
+    final var result = exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency);
+
+    StepVerifier.create(result)
+        .expectErrorSatisfies(throwable -> {
+          assertThat(throwable).isExactlyInstanceOf(IllegalArgumentException.class);
+          assertThat(throwable.getMessage()).isEqualTo(expectedErrorMessage);
+        })
+        .verify();
+  }
+
+  private static Stream<Arguments> getClientErrorMessages() {
+    return Stream.of(
+        arguments("invalid_access_key", "Invalid user id"),
+        arguments("invalid_base_currency", "Invalid base currency"),
+        arguments("base_currency_access_restricted", "Base currency is not available"),
+        arguments("invalid_currency_codes", "Invalid target currency"),
+        arguments("unknown_error", "Unknown error"));
   }
 }
