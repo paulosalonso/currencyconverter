@@ -17,7 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
 @Table("exchange_transaction")

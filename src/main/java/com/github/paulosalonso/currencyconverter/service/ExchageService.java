@@ -5,7 +5,6 @@ import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
 import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
 import java.math.BigDecimal;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -20,19 +19,20 @@ public class ExchageService {
     this.exchangePort = exchangePort;
   }
 
-  public Mono<ExchangeTransaction> convert(final ExchangeRequest request) {
+  public Mono<ExchangeTransaction> exchange(final ExchangeRequest request) {
     log.info("Starting conversion: {}", request);
 
     return exchangePort.getCurrentExchangeRate(request)
-        .map(exchangeRate -> map(request, exchangeRate));
+        .map(exchangeRate -> createTransaction(request, exchangeRate))
+        .flatMap(exchangePort::save);
   }
 
-  private ExchangeTransaction map(ExchangeRequest request, ExchangeRate exchangeRate) {
+  private ExchangeTransaction createTransaction(
+      ExchangeRequest request, ExchangeRate exchangeRate) {
 
-    final var convertedAmount = request.getAmount().multiply(exchangeRate.getRate());
+    final var convertedAmount = convert(request, exchangeRate);
 
     return ExchangeTransaction.builder()
-        .id(UUID.randomUUID())
         .userId(request.getUserId())
         .fromCurrency(request.getFromCurrency())
         .originalAmount(request.getAmount())
@@ -41,5 +41,9 @@ public class ExchageService {
         .rate(exchangeRate.getRate())
         .dateTime(exchangeRate.getDateTime())
         .build();
+  }
+
+  private BigDecimal convert(ExchangeRequest request, ExchangeRate exchangeRate) {
+    return request.getAmount().multiply(exchangeRate.getRate());
   }
 }
