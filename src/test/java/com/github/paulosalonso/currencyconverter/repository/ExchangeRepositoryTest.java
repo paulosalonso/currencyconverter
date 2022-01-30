@@ -1,6 +1,9 @@
-package com.github.paulosalonso.currencyconverter.service.port;
+package com.github.paulosalonso.currencyconverter.repository;
 
+import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
+import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeRateResponseDtoMapper.toModel;
+import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper.toModel;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -10,13 +13,16 @@ import static org.mockito.Mockito.when;
 
 import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
-import com.github.paulosalonso.currencyconverter.repository.ExchangeRepository;
+import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
+import com.github.paulosalonso.currencyconverter.repository.database.ExchangeTransactionEntityRepository;
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +39,13 @@ import reactor.test.StepVerifier;
 class ExchangeRepositoryTest {
 
   @InjectMocks
-  private ExchangeRepository exchangeRateApiPort;
+  private ExchangeRepository exchangeRepository;
 
   @Mock
   private ExchangeRateApiClient exchangeRateApiClient;
+
+  @Mock
+  private ExchangeTransactionEntityRepository exchangeTransactionEntityRepository;
 
   @Test
   void givenValidParametersWhenGetCurrentExchangeRateThenReturnExchangeRateInstance() {
@@ -57,7 +66,7 @@ class ExchangeRepositoryTest {
         .thenReturn(monoDto);
 
     final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
-    final var result = exchangeRateApiPort.getCurrentExchangeRate(request);
+    final var result = exchangeRepository.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
         .assertNext(exchangeRate ->
@@ -85,7 +94,7 @@ class ExchangeRepositoryTest {
 
     final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
 
-    final var result = exchangeRateApiPort.getCurrentExchangeRate(request);
+    final var result = exchangeRepository.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
         .expectErrorSatisfies(throwable -> {
@@ -95,6 +104,36 @@ class ExchangeRepositoryTest {
         .verify();
 
     verify(exchangeRateApiClient).getCurrentExchangeRate(userId, fromCurrency, toCurrency);
+  }
+
+  @Test
+  void givenAnExchangeTransactionWhenSaveThenCallDatabaseRepository() {
+    final var exchangeTransaction = ExchangeTransaction.builder()
+        .id(UUID.randomUUID())
+        .userId("user-id")
+        .fromCurrency(EUR)
+        .originalAmount(BigDecimal.ZERO)
+        .toCurrency(BRL)
+        .convertedAmount(BigDecimal.ONE)
+        .rate(BigDecimal.TEN)
+        .dateTime(ZonedDateTime.now(UTC))
+        .build();
+
+    final var entity = ExchangeTransactionEntityMapper.toEntity(exchangeTransaction);
+    final var savedEntity = entity.toBuilder()
+        .id(UUID.randomUUID().toString())
+        .build();
+
+    when(exchangeTransactionEntityRepository.save(entity)).thenReturn(Mono.just(savedEntity));
+
+    final var result = exchangeRepository.save(exchangeTransaction);
+
+    StepVerifier.create(result)
+        .assertNext(saved -> assertThat(saved).isEqualTo(toModel(savedEntity)))
+        .expectComplete()
+        .verify();
+
+    verify(exchangeTransactionEntityRepository).save(entity);
   }
 
   private static Stream<Arguments> getClientExceptions() {
