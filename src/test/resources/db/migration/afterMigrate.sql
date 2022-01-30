@@ -1,0 +1,2 @@
+delete from exchange_transaction;
+insert into exchange_transaction(id, user_id, from_currency, original_amount, to_currency, converted_amount, rate, timestamp) values ('c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960', '1234567890', 'EUR', 10, 'BRL', 60.1, 6.01, '2022-01-30 19:30');
