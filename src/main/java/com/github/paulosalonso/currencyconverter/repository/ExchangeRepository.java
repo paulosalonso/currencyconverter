@@ -1,6 +1,8 @@
 package com.github.paulosalonso.currencyconverter.repository;
 
+import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeRateResponseDtoMapper.toModel;
 import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper.toEntity;
+import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper.toModel;
 import static java.time.ZoneOffset.UTC;
 
 import com.github.paulosalonso.currencyconverter.model.Currency;
@@ -10,6 +12,7 @@ import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
 import com.github.paulosalonso.currencyconverter.repository.database.ExchangeTransactionEntityRepository;
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
+import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeRateResponseDtoMapper;
 import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper;
 import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
 import java.math.BigDecimal;
@@ -37,27 +40,12 @@ public class ExchangeRepository implements ExchangePort {
     final var toCurrency = request.getToCurrency().name();
 
     return exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency,toCurrency)
-        .map(exchangeRateResponseDto -> map(request.getToCurrency(), exchangeRateResponseDto));
+        .map(exchangeRateResponseDto -> toModel(request.getToCurrency(), exchangeRateResponseDto));
   }
 
   @Override
   public Mono<ExchangeTransaction> save(ExchangeTransaction transaction) {
     return exchangeTransactionEntityRepository.save(toEntity(transaction))
         .map(ExchangeTransactionEntityMapper::toModel);
-  }
-
-  private ExchangeRate map(final Currency toCurrency,
-      final ExchangeRateResponseDto exchangeRateResponseDto) {
-
-    final var instant = Instant.ofEpochSecond(exchangeRateResponseDto.getTimestamp());
-    final var dateTime = ZonedDateTime.ofInstant(instant, UTC);
-    final var rate = BigDecimal.valueOf(exchangeRateResponseDto.getRates().get(toCurrency.name()));
-
-    return ExchangeRate.builder()
-        .dateTime(dateTime)
-        .fromCurrency(Currency.valueOf(exchangeRateResponseDto.getBase()))
-        .toCurrency(toCurrency)
-        .rate(rate)
-        .build();
   }
 }
