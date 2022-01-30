@@ -17,7 +17,7 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class ExchangeResponseDto {
+public class TransactionDto {
   private String id;
   private String userId;
   private String fromCurrency;
