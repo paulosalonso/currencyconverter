@@ -45,7 +45,7 @@ class SearchServiceTest {
         .build();
     final var flux = Flux.just(exchangeTransaction);
 
-    when(exchangePort.getAllByUserId(userId)).thenReturn(flux);
+    when(exchangePort.findAllTransactionsByUserId(userId)).thenReturn(flux);
 
     final var result = searchService.findAllTransactionsByUserId(userId);
 
@@ -55,7 +55,7 @@ class SearchServiceTest {
         .expectComplete()
         .verify();
 
-    verify(exchangePort).getAllByUserId(userId);
+    verify(exchangePort).findAllTransactionsByUserId(userId);
     verifyNoMoreInteractions(exchangePort);
   }
 

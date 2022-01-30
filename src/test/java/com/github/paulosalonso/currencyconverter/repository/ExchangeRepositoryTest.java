@@ -6,7 +6,6 @@ import static com.github.paulosalonso.currencyconverter.repository.mapper.Exchan
 import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper.toModel;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -27,10 +26,8 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -155,7 +152,7 @@ class ExchangeRepositoryTest {
 
     when(exchangeTransactionEntityRepository.findAllByUserId(userId)).thenReturn(flux);
 
-    final var result = exchangeRepository.getAllByUserId(userId);
+    final var result = exchangeRepository.findAllTransactionsByUserId(userId);
 
     StepVerifier.create(result)
         .assertNext(exchangeTransaction ->

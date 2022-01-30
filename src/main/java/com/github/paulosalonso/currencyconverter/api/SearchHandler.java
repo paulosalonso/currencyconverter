@@ -1,4 +1,4 @@
-package com.github.paulosalonso.currencyconverter;
+package com.github.paulosalonso.currencyconverter.api;
 
 import static java.lang.String.format;
 import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
