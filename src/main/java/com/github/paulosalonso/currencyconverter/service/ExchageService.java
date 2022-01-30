@@ -29,8 +29,7 @@ public class ExchageService {
 
   private ExchangeTransaction map(ExchangeRequest request, ExchangeRate exchangeRate) {
 
-    final var rate = BigDecimal.valueOf(exchangeRate.getRate());
-    final var convertedAmount = request.getAmount().multiply(rate);
+    final var convertedAmount = request.getAmount().multiply(exchangeRate.getRate());
 
     return ExchangeTransaction.builder()
         .id(UUID.randomUUID())
@@ -39,7 +38,7 @@ public class ExchageService {
         .originalAmount(request.getAmount())
         .toCurrency(request.getToCurrency())
         .convertedAmount(convertedAmount)
-        .rate(rate)
+        .rate(exchangeRate.getRate())
         .dateTime(exchangeRate.getDateTime())
         .build();
   }

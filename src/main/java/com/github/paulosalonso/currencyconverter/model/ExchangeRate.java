@@ -1,5 +1,6 @@
 package com.github.paulosalonso.currencyconverter.model;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,5 +16,5 @@ public class ExchangeRate {
   private final ZonedDateTime dateTime;
   private final Currency fromCurrency;
   private final Currency toCurrency;
-  private final double rate;
+  private final BigDecimal rate;
 }

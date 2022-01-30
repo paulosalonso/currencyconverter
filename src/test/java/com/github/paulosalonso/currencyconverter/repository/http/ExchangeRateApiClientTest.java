@@ -1,4 +1,4 @@
-package com.github.paulosalonso.currencyconverter.client;
+package com.github.paulosalonso.currencyconverter.repository.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
