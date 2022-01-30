@@ -1,5 +1,6 @@
 package com.github.paulosalonso.currencyconverter.service.port;
 
+import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeRateResponseDtoMapper.toModel;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -7,11 +8,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.github.paulosalonso.currencyconverter.model.Currency;
+import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.repository.ExchangeRepository;
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
-import com.github.paulosalonso.currencyconverter.model.Currency;
-import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -59,12 +60,8 @@ class ExchangeRepositoryTest {
     final var result = exchangeRateApiPort.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
-        .assertNext(exchangeRate -> {
-          assertThat(exchangeRate.getDateTime().toEpochSecond()).isEqualTo(dto.getTimestamp());
-          assertThat(exchangeRate.getFromCurrency()).isEqualTo(Currency.valueOf(fromCurrency));
-          assertThat(exchangeRate.getToCurrency()).isEqualTo(Currency.valueOf(toCurrency));
-          assertThat(exchangeRate.getRate()).isEqualTo(dto.getRates().get(toCurrency));
-        })
+        .assertNext(exchangeRate ->
+            assertThat(exchangeRate).isEqualTo(toModel(Currency.valueOf(toCurrency), dto)))
         .expectComplete()
         .verify();
 

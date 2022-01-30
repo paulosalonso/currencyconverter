@@ -8,6 +8,7 @@ import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRate;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -45,12 +46,13 @@ public class ExchangeRepository implements ExchangePort {
 
     final var instant = Instant.ofEpochSecond(exchangeRateResponseDto.getTimestamp());
     final var dateTime = ZonedDateTime.ofInstant(instant, UTC);
+    final var rate = BigDecimal.valueOf(exchangeRateResponseDto.getRates().get(toCurrency.name()));
 
     return ExchangeRate.builder()
         .dateTime(dateTime)
         .fromCurrency(Currency.valueOf(exchangeRateResponseDto.getBase()))
         .toCurrency(toCurrency)
-        .rate(exchangeRateResponseDto.getRates().get(toCurrency.name()))
+        .rate(rate)
         .build();
   }
 

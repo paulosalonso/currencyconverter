@@ -27,8 +27,9 @@ public class ExchangeTransactionEntity {
   private String id;
   private String userId;
   private Currency fromCurrency;
-  private BigDecimal amount;
+  private BigDecimal originalAmount;
   private Currency toCurrency;
+  private BigDecimal convertedAmount;
   private BigDecimal rate;
   private Instant timestamp;
 }

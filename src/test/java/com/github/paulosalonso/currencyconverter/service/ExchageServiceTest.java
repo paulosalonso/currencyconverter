@@ -32,7 +32,7 @@ class ExchageServiceTest {
   void givenARequestWhenConvertThenReturnAExchangeRateTransaction() {
     final var request = ExchangeRequest.of("user-id", "EUR", BigDecimal.TEN, "BRL");
 
-    final var eurToBrlRate = 6.1;
+    final var eurToBrlRate = BigDecimal.valueOf(6.1);
 
     final var exchangeRate = ExchangeRate.builder()
         .dateTime(ZonedDateTime.now(UTC))
@@ -55,7 +55,7 @@ class ExchageServiceTest {
           assertThat(transaction.getOriginalAmount()).isEqualTo(request.getAmount());
           assertThat(transaction.getToCurrency()).isEqualTo(request.getToCurrency());
           assertThat(transaction.getConvertedAmount())
-              .isEqualTo(request.getAmount().multiply(BigDecimal.valueOf(eurToBrlRate)));
+              .isEqualTo(request.getAmount().multiply(eurToBrlRate));
           assertThat(transaction.getDateTime()).isEqualTo(exchangeRate.getDateTime());
         })
         .expectComplete()
