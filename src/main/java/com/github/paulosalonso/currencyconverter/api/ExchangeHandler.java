@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.api;
 
-import static org.springframework.web.reactive.function.BodyInserters.fromPublisher;
-
 import com.github.paulosalonso.currencyconverter.api.dto.ExchangeRequestDto;
 import com.github.paulosalonso.currencyconverter.api.dto.TransactionDto;
 import com.github.paulosalonso.currencyconverter.api.mapper.ExchangeRequestMapper;
@@ -17,19 +15,25 @@ import reactor.core.publisher.Mono;
 public class ExchangeHandler {
 
   private final ExchageService exchageService;
+  private final ErrorHandler errorHandler;
 
-  public ExchangeHandler(final ExchageService exchageService) {
+  public ExchangeHandler(final ExchageService exchageService, final ErrorHandler errorHandler) {
     this.exchageService = exchageService;
+    this.errorHandler = errorHandler;
   }
 
   public Mono<ServerResponse> handle(ServerRequest request) {
-    final var response = request.bodyToMono(ExchangeRequestDto.class)
+    return request.bodyToMono(ExchangeRequestDto.class)
         .map(ExchangeRequestMapper::toModel)
         .flatMap(exchageService::exchange)
-        .map(TransactionDtoMapper::toTransactionDto);
+        .map(TransactionDtoMapper::toTransactionDto)
+        .flatMap(this::createResponse)
+        .onErrorResume(errorHandler::handle);
+  }
 
+  private Mono<ServerResponse> createResponse(TransactionDto transactionDto) {
     return ServerResponse.ok()
         .contentType(MediaType.APPLICATION_JSON)
-        .body(fromPublisher(response, TransactionDto.class));
+        .bodyValue(transactionDto);
   }
 }
