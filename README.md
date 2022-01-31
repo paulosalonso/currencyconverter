@@ -62,9 +62,7 @@ que deverá ser informada nas requisições nos parâmetros identificados como _
 
 ### Postman
 
-Importe a coleção e os ambientes do postman presentes no projeto para consumir a API.  
-Há requisições com e sem autenticação. Também há a requisição para obtenção do token no Keycloak local (Docker).  
-O ambiente local é configurado de acordo com as configurações do docker-compose.
+Importe a coleção e os ambientes do postman presentes no projeto para consumir a API.
 
 [Collection](https://github.com/paulosalonso/currencyconverter/blob/main/.postman/Currency%20Converter%20API.postman_collection.json)  
 [Local Environment](https://github.com/paulosalonso/currencyconverter/blob/main/.postman/Currency%20Converter%20LOCAL.postman_environment.json)  
@@ -101,4 +99,4 @@ execute o comando abaixo na raiz do projeto:
 
 > docker-compose up -d
 
-A aplicação estará disponível em http://localhost:8080.
+Em todos os casos a aplicação estará disponível no endereço http://localhost:8080.
