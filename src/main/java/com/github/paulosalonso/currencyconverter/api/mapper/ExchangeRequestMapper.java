@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 public class ExchangeRequestMapper {
 
   public static ExchangeRequest toModel(ExchangeRequestDto dto) {
-    return ExchangeRequest.of(
-        dto.getUserId(),
-        dto.getFromCurrency(),
-        dto.getAmount(),
-        dto.getToCurrency());
+    return ExchangeRequest.builder()
+        .userId(dto.getUserId())
+        .fromCurrency(dto.getFromCurrency())
+        .amount(dto.getAmount())
+        .toCurrency(dto.getToCurrency())
+        .build();
   }
 }

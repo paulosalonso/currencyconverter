@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.repository;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeRateResponseDtoMapper.toModel;
 import static com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper.toModel;
 import static java.time.ZoneOffset.UTC;
@@ -11,7 +9,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.model.ExchangeRequest;
 import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
 import com.github.paulosalonso.currencyconverter.repository.database.ExchangeTransactionEntityRepository;
@@ -65,12 +62,17 @@ class ExchangeRepositoryTest {
     when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
         .thenReturn(monoDto);
 
-    final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
+    final var request = ExchangeRequest.builder()
+        .userId(userId)
+        .fromCurrency(fromCurrency)
+        .amount(BigDecimal.ZERO)
+        .toCurrency(toCurrency)
+        .build();
     final var result = exchangeRepository.getCurrentExchangeRate(request);
 
     StepVerifier.create(result)
         .assertNext(exchangeRate ->
-            assertThat(exchangeRate).isEqualTo(toModel(Currency.valueOf(toCurrency), dto)))
+            assertThat(exchangeRate).isEqualTo(toModel(toCurrency, dto)))
         .expectComplete()
         .verify();
 
@@ -90,7 +92,12 @@ class ExchangeRepositoryTest {
     when(exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency, toCurrency))
         .thenReturn(errorMono);
 
-    final var request = ExchangeRequest.of(userId, fromCurrency, BigDecimal.ZERO, toCurrency);
+    final var request = ExchangeRequest.builder()
+        .userId(userId)
+        .fromCurrency(fromCurrency)
+        .amount(BigDecimal.ZERO)
+        .toCurrency(toCurrency)
+        .build();
 
     final var result = exchangeRepository.getCurrentExchangeRate(request);
 
@@ -108,9 +115,9 @@ class ExchangeRepositoryTest {
     final var exchangeTransaction = ExchangeTransaction.builder()
         .id(UUID.randomUUID())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ZERO)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.ONE)
         .rate(BigDecimal.TEN)
         .dateTime(ZonedDateTime.now(UTC))
@@ -141,9 +148,9 @@ class ExchangeRepositoryTest {
     final var entity = ExchangeTransactionEntity.builder()
         .id(UUID.randomUUID().toString())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ZERO)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.ONE)
         .rate(BigDecimal.TEN)
         .timestamp(Instant.now(Clock.systemUTC()))

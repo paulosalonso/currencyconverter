@@ -29,8 +29,8 @@ public class ExchangeRepository implements ExchangePort {
   @Override
   public Mono<ExchangeRate> getCurrentExchangeRate(ExchangeRequest request) {
     final var userId = request.getUserId();
-    final var fromCurrency = request.getFromCurrency().name();
-    final var toCurrency = request.getToCurrency().name();
+    final var fromCurrency = request.getFromCurrency();
+    final var toCurrency = request.getToCurrency();
 
     return exchangeRateApiClient.getCurrentExchangeRate(userId, fromCurrency,toCurrency)
         .map(exchangeRateResponseDto -> toModel(request.getToCurrency(), exchangeRateResponseDto));

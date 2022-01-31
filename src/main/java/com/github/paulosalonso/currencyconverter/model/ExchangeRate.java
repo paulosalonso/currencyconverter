@@ -14,7 +14,7 @@ import lombok.ToString;
 public class ExchangeRate {
 
   private final ZonedDateTime dateTime;
-  private final Currency fromCurrency;
-  private final Currency toCurrency;
+  private final String fromCurrency;
+  private final String toCurrency;
   private final BigDecimal rate;
 }

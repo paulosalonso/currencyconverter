@@ -1,13 +1,10 @@
 package com.github.paulosalonso.currencyconverter.repository.mapper;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.paulosalonso.currencyconverter.model.ExchangeTransaction;
 import com.github.paulosalonso.currencyconverter.repository.database.entity.ExchangeTransactionEntity;
-import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -22,9 +19,9 @@ public class ExchangeTransactionEntityMapperTest {
     final var exchangeTransaction = ExchangeTransaction.builder()
         .id(UUID.randomUUID())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ZERO)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.ONE)
         .rate(BigDecimal.TEN)
         .dateTime(ZonedDateTime.now(UTC))
@@ -47,9 +44,9 @@ public class ExchangeTransactionEntityMapperTest {
     final var exchangeTransactionEntity = ExchangeTransactionEntity.builder()
         .id(UUID.randomUUID().toString())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ZERO)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.ONE)
         .rate(BigDecimal.TEN)
         .timestamp(Instant.now(Clock.systemUTC()))

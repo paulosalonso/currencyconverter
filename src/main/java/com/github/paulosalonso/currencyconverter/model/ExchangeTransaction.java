@@ -15,9 +15,9 @@ import lombok.ToString;
 public class ExchangeTransaction {
   private final UUID id;
   private final String userId;
-  private final Currency fromCurrency;
+  private final String fromCurrency;
   private final BigDecimal originalAmount;
-  private final Currency toCurrency;
+  private final String toCurrency;
   private final BigDecimal convertedAmount;
   private final BigDecimal rate;
   private final ZonedDateTime dateTime;

@@ -4,7 +4,6 @@ import static com.github.paulosalonso.currencyconverter.repository.mapper.Exchan
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.paulosalonso.currencyconverter.model.Currency;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,11 +26,11 @@ class ExchangeRateResponseDtoMapperTest {
         .rates(Map.of(toCurrency, 5.0))
         .build();
 
-    final var exchangeRate = toModel(Currency.valueOf(toCurrency), dto);
+    final var exchangeRate = toModel(toCurrency, dto);
 
     assertThat(exchangeRate.getDateTime().toEpochSecond()).isEqualTo(dto.getTimestamp());
-    assertThat(exchangeRate.getFromCurrency()).isEqualTo(Currency.valueOf(fromCurrency));
-    assertThat(exchangeRate.getToCurrency()).isEqualTo(Currency.valueOf(toCurrency));
+    assertThat(exchangeRate.getFromCurrency()).isEqualTo(fromCurrency);
+    assertThat(exchangeRate.getToCurrency()).isEqualTo(toCurrency);
     assertThat(exchangeRate.getRate())
         .isEqualTo(BigDecimal.valueOf(dto.getRates().get(toCurrency)));
   }
