@@ -4,8 +4,8 @@ build:
 openApi:
   contact:
     name: ${CONTACT_NAME:}
-    email: ${CONTACT_EMAIL}
-    url: ${CONTACT_URL}
+    email: ${CONTACT_EMAIL:}
+    url: ${CONTACT_URL:}
 
 spring:
   feign:
