@@ -91,6 +91,9 @@ public class ExchangeEndpointIT extends BaseIT {
         .when()
         .get("/v1/exchanges")
         .then()
-        .statusCode(500);
+        .statusCode(400)
+        .body("status", equalTo(400))
+        .body("message", equalTo("The param 'userId' is required"))
+        .body("timestamp", notNullValue());
   }
 }
