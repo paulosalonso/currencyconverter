@@ -10,14 +10,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateErrorDto.Error;
 import com.github.paulosalonso.currencyconverter.repository.http.dto.ExchangeRateResponseDto;
 import java.net.URI;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -215,7 +211,7 @@ class ExchangeRateApiClientTest {
   @ParameterizedTest
   @MethodSource("getClientErrorMessages")
   void givenParametersWhenOccursAnErrorGettingExchangeRateThenReturnThrowableMono(
-      String clientErrorMessage, String expectedErrorMessage) {
+      String clientErrorMessage, Class<? extends Throwable> expectedThrowable, String expectedErrorMessage) {
 
     final var userId = "user-id";
     final var fromCurrency = "from-currency";
@@ -251,7 +247,7 @@ class ExchangeRateApiClientTest {
 
     StepVerifier.create(result)
         .expectErrorSatisfies(throwable -> {
-          assertThat(throwable).isExactlyInstanceOf(IllegalArgumentException.class);
+          assertThat(throwable).isExactlyInstanceOf(expectedThrowable);
           assertThat(throwable.getMessage()).isEqualTo(expectedErrorMessage);
         })
         .verify();
@@ -259,10 +255,10 @@ class ExchangeRateApiClientTest {
 
   private static Stream<Arguments> getClientErrorMessages() {
     return Stream.of(
-        arguments("invalid_access_key", "Invalid user id"),
-        arguments("invalid_base_currency", "Invalid base currency"),
-        arguments("base_currency_access_restricted", "Base currency is not available"),
-        arguments("invalid_currency_codes", "Invalid target currency"),
-        arguments("unknown_error", "Unknown error"));
+        arguments("invalid_access_key", IllegalAccessException.class, "Invalid user id"),
+        arguments("invalid_base_currency", IllegalArgumentException.class, "Invalid base currency"),
+        arguments("base_currency_access_restricted", IllegalStateException.class, "Base currency is not available"),
+        arguments("invalid_currency_codes", IllegalArgumentException.class, "Invalid target currency"),
+        arguments("unknown_error", RuntimeException.class, "Unknown error"));
   }
 }
