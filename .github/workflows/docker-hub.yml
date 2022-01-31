@@ -1,0 +1,52 @@
+name: Docker Hub Image Delivery
+
+on:
+  release:
+    types:
+      - released
+
+env:
+  APPLICATION_NAME: currencyconverter
+
+jobs:
+  build-and-publish:
+    name: Build and publish image in Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Project checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Extracting tag
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Updating project version in pom.xml
+        run: |
+          echo Version: ${VERSION}
+          mvn versions:set -DnewVersion=${{ env.VERSION }}
+
+      - name: Building package with Maven
+        run: mvn -B package -DskipTests -DskipMutation
+
+      - name: Building Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.APPLICATION_NAME }}:${{ env.VERSION }} -t ${{ secrets.DOCKER_USERNAME }}/${{ env.APPLICATION_NAME }}:latest .
+
+      - name: Login on DockerHub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Publishing Docker image
+        run: | 
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.APPLICATION_NAME }}:${{ env.VERSION }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.APPLICATION_NAME }}:latest
