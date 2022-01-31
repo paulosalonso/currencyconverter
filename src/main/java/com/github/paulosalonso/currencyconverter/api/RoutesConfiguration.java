@@ -2,6 +2,7 @@ package com.github.paulosalonso.currencyconverter.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -38,6 +39,13 @@ public class RoutesConfiguration {
           consumes = APPLICATION_JSON_VALUE,
           produces = APPLICATION_JSON_VALUE,
           beanClass = ExchangeHandler.class,
+          beanMethod = "handle"),
+      @RouterOperation(
+          path = EXCHANGES_PATH,
+          method = GET,
+          consumes = APPLICATION_JSON_VALUE,
+          produces = APPLICATION_JSON_VALUE,
+          beanClass = SearchHandler.class,
           beanMethod = "handle")
   })
   public RouterFunction<ServerResponse> routeExchangeRequest() {
