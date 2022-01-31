@@ -5,7 +5,6 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
-import com.github.paulosalonso.currencyconverter.SearchHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -32,7 +31,7 @@ public class RoutesConfiguration {
     return RouterFunctions
         .route(
             POST(EXCHANGES_PATH).and(accept(APPLICATION_JSON)),
-            exchangeHandler::convert)
+            exchangeHandler::handle)
         .andRoute(
             GET(EXCHANGES_PATH).and(accept(APPLICATION_JSON)),
             searchHandler::handle);

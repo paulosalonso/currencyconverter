@@ -22,7 +22,7 @@ public class ExchangeHandler {
     this.exchageService = exchageService;
   }
 
-  public Mono<ServerResponse> convert(ServerRequest request) {
+  public Mono<ServerResponse> handle(ServerRequest request) {
     final var response = request.bodyToMono(ExchangeRequestDto.class)
         .map(ExchangeRequestMapper::toModel)
         .flatMap(exchageService::exchange)

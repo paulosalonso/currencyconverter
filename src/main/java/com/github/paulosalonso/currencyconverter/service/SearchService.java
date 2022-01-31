@@ -17,6 +17,6 @@ public class SearchService {
   }
 
   public Flux<ExchangeTransaction> findAllTransactionsByUserId(final String userId) {
-    return exchangePort.getAllByUserId(userId);
+    return exchangePort.findAllTransactionsByUserId(userId);
   }
 }
