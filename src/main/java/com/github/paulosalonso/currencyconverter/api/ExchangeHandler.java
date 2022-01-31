@@ -45,8 +45,8 @@ public class ExchangeHandler {
       tags = { "Exchange" },
       requestBody = @RequestBody(required = true, content = @Content(schema = @Schema(implementation = ExchangeRequestDto.class))),
       responses = {
-          @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = TransactionDto.class))),
-          @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+          @ApiResponse(responseCode = "200", description = "Exchange was performed", content = @Content(schema = @Schema(implementation = TransactionDto.class))),
+          @ApiResponse(responseCode = "400", description = "Request body or its data is not valid", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
           @ApiResponse(responseCode = "401", description = "User is not authorized", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
           @ApiResponse(responseCode = "403", description = "User is not allowed to perform exchange for sent base currency", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
           @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
