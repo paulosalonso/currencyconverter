@@ -63,6 +63,25 @@ public class ExchangeEndpointIT extends BaseIT {
   }
 
   @Test
+  void givenAnInvalidParameterWhenRequestCurrencyExchangeThenReturnErrorWithStatusCode400() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .body(ExchangeRequestDto.builder()
+            .fromCurrency("EUR")
+            .amount(BigDecimal.TEN)
+            .toCurrency("BRL")
+            .build())
+        .when()
+        .post("/v1/exchanges")
+        .then()
+        .statusCode(400)
+        .body("status", equalTo(400))
+        .body("message", equalTo("Invalid data. Violations: property 'userId' must not be blank"))
+        .body("timestamp", notNullValue());
+  }
+
+  @Test
   void givenAnUserIdWhenGetAllTransactionsThenReturnArrayOfTransactionsWithStatus200() {
     given()
         .accept(JSON)
