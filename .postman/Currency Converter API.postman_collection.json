@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "871c811c-b6c9-4bfa-baa4-8363c7231328",
+		"name": "Currency Converter API",
+		"description": "Perform currency convertions\n\nContact Support:\n Name: Paulo Alonso\n Email: paulo_alonso_@hotmail.com",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "v1/exchanges",
+			"item": [
+				{
+					"name": "Get transactions by userId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/v1/exchanges?userId=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"exchanges"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "",
+									"description": "(Required) Id of user"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Convert",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"\",\n    \"fromCurrency\": \"EUR\",\n    \"amount\": 50,\n    \"toCurrency\": \"BRL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/exchanges",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"exchanges"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
