@@ -3,11 +3,17 @@ package com.github.paulosalonso.currencyconverter.api;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
+import com.github.paulosalonso.currencyconverter.api.dto.ErrorDto;
 import com.github.paulosalonso.currencyconverter.api.dto.ExchangeRequestDto;
 import com.github.paulosalonso.currencyconverter.api.dto.TransactionDto;
 import com.github.paulosalonso.currencyconverter.api.mapper.ExchangeRequestMapper;
 import com.github.paulosalonso.currencyconverter.api.mapper.TransactionDtoMapper;
 import com.github.paulosalonso.currencyconverter.service.ExchageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import javax.validation.Validator;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -33,6 +39,18 @@ public class ExchangeHandler {
     this.validator = validator;
   }
 
+  @Operation(
+      operationId = "exchange",
+      summary = "Perform currency exchange",
+      tags = { "Exchange" },
+      requestBody = @RequestBody(required = true, content = @Content(schema = @Schema(implementation = ExchangeRequestDto.class))),
+      responses = {
+          @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = TransactionDto.class))),
+          @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+          @ApiResponse(responseCode = "401", description = "User is not authorized", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+          @ApiResponse(responseCode = "403", description = "User is not allowed to perform exchange for sent base currency", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
+          @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+      })
   public Mono<ServerResponse> handle(ServerRequest request) {
     return request.bodyToMono(ExchangeRequestDto.class)
         .flatMap(this::validate)
