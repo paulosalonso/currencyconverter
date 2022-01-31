@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.api.mapper;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,9 +16,9 @@ class TransactionDtoMapperTest {
     final var exchangeTransaction = ExchangeTransaction.builder()
         .id(UUID.randomUUID())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ONE)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.TEN)
         .rate(BigDecimal.ZERO)
         .dateTime(ZonedDateTime.now(UTC))
@@ -30,9 +28,9 @@ class TransactionDtoMapperTest {
 
     assertThat(responseDto.getId()).isEqualTo(exchangeTransaction.getId().toString());
     assertThat(responseDto.getUserId()).isEqualTo(exchangeTransaction.getUserId());
-    assertThat(responseDto.getFromCurrency()).isEqualTo(exchangeTransaction.getFromCurrency().name());
+    assertThat(responseDto.getFromCurrency()).isEqualTo(exchangeTransaction.getFromCurrency());
     assertThat(responseDto.getOriginalAmount()).isEqualTo(exchangeTransaction.getOriginalAmount());
-    assertThat(responseDto.getToCurrency()).isEqualTo(exchangeTransaction.getToCurrency().name());
+    assertThat(responseDto.getToCurrency()).isEqualTo(exchangeTransaction.getToCurrency());
     assertThat(responseDto.getConvertedAmount()).isEqualTo(exchangeTransaction.getConvertedAmount());
     assertThat(responseDto.getRate()).isEqualTo(exchangeTransaction.getRate());
     assertThat(responseDto.getDateTime()).isEqualTo(exchangeTransaction.getDateTime());

@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.service;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,14 +38,19 @@ class ExchageServiceTest {
 
   @Test
   void givenARequestWhenConvertThenReturnAExchangeRateTransaction() {
-    final var request = ExchangeRequest.of("user-id", "EUR", BigDecimal.TEN, "BRL");
+    final var request = ExchangeRequest.builder()
+        .userId("user-id")
+        .fromCurrency("EUR")
+        .amount(BigDecimal.TEN)
+        .toCurrency("BRL")
+        .build();
 
     final var eurToBrlRate = BigDecimal.valueOf(6.1);
 
     final var exchangeRate = ExchangeRate.builder()
         .dateTime(ZonedDateTime.now(UTC))
-        .fromCurrency(EUR)
-        .toCurrency(BRL)
+        .fromCurrency("EUR")
+        .toCurrency("BRL")
         .rate(eurToBrlRate)
         .build();
 
@@ -83,9 +86,9 @@ class ExchageServiceTest {
     return ExchangeTransaction.builder()
         .id(UUID.randomUUID())
         .userId("user-id")
-        .fromCurrency(EUR)
+        .fromCurrency("EUR")
         .originalAmount(BigDecimal.ZERO)
-        .toCurrency(BRL)
+        .toCurrency("BRL")
         .convertedAmount(BigDecimal.ONE)
         .rate(BigDecimal.TEN)
         .dateTime(ZonedDateTime.now(UTC))

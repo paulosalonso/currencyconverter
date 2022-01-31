@@ -1,7 +1,5 @@
 package com.github.paulosalonso.currencyconverter.api.mapper;
 
-import static com.github.paulosalonso.currencyconverter.model.Currency.BRL;
-import static com.github.paulosalonso.currencyconverter.model.Currency.EUR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.paulosalonso.currencyconverter.api.dto.ExchangeRequestDto;
@@ -22,8 +20,8 @@ class ExchangeRequestMapperTest {
     final var exchangeRequest = ExchangeRequestMapper.toModel(requestDto);
 
     assertThat(exchangeRequest.getUserId()).isEqualTo(requestDto.getUserId());
-    assertThat(exchangeRequest.getFromCurrency()).isEqualTo(EUR);
+    assertThat(exchangeRequest.getFromCurrency()).isEqualTo("EUR");
     assertThat(exchangeRequest.getAmount()).isEqualTo(requestDto.getAmount());
-    assertThat(exchangeRequest.getToCurrency()).isEqualTo(BRL);
+    assertThat(exchangeRequest.getToCurrency()).isEqualTo("BRL");
   }
 }
