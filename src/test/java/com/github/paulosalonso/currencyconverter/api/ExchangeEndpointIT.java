@@ -87,23 +87,73 @@ public class ExchangeEndpointIT extends BaseIT {
         .accept(JSON)
         .contentType(JSON)
         .queryParam("userId", "1234567890")
+        .queryParam("pageSize", "50")
+        .when()
+        .get("/v1/exchanges")
+        .then()
+        .statusCode(200)
+        .body("$", hasSize(3))
+        .body("[0].id", equalTo("c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960"))
+        .body("[1].id", equalTo("8ee80765-7bb8-44ea-8f30-8cd10f1c9f3c"))
+        .body("[2].id", equalTo("f71f4d9a-af52-4a6a-b99c-973defbbf670"));
+  }
+
+  @Test
+  void givenPageAndPageSizeWhenGetAllTransactionsThenReturnRequestedPageWithStatus200() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .queryParam("userId", "1234567890")
+        .queryParam("page", "1")
+        .queryParam("pageSize", "1")
         .when()
         .get("/v1/exchanges")
         .then()
         .statusCode(200)
         .body("$", hasSize(1))
-        .body("[0].id", equalTo("c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960"))
+        .body("[0].id", equalTo("8ee80765-7bb8-44ea-8f30-8cd10f1c9f3c"))
         .body("[0].userId", equalTo("1234567890"))
         .body("[0].fromCurrency", equalTo("EUR"))
         .body("[0].originalAmount", equalTo(10))
-        .body("[0].toCurrency", equalTo("BRL"))
-        .body("[0].convertedAmount", equalTo(60.1F))
-        .body("[0].rate", equalTo(6.01F))
+        .body("[0].toCurrency", equalTo("USD"))
+        .body("[0].convertedAmount", equalTo(11.2F))
+        .body("[0].rate", equalTo(1.12F))
         .body("[0].dateTime", equalTo("2022-01-30T19:30:00Z"));
   }
 
   @Test
-  void givenNoParameterWhenGetAllTransactionsThenReturnStatusCode400() {
+  void givenOnlyPageWhenGetAllTransactionsThenReturnPageWithDefaultSizeAndStatus200() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .queryParam("userId", "1234567890")
+        .queryParam("page", "0")
+        .when()
+        .get("/v1/exchanges")
+        .then()
+        .statusCode(200)
+        .body("$", hasSize(DEFAULT_PAGE_SIZE))
+        .body("[0].id", equalTo("c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960"))
+        .body("[1].id", equalTo("8ee80765-7bb8-44ea-8f30-8cd10f1c9f3c"));
+  }
+
+  @Test
+  void givenOnlyPageSizeWhenGetAllTransactionsThenReturnPageZeroWithRequestdSizeAndStatus200() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .queryParam("userId", "1234567890")
+        .queryParam("pageSize", "1")
+        .when()
+        .get("/v1/exchanges")
+        .then()
+        .statusCode(200)
+        .body("$", hasSize(1))
+        .body("[0].id", equalTo("c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960"));
+  }
+
+  @Test
+  void givenNoUserIdParameterWhenGetAllTransactionsThenReturnStatusCode400() {
     given()
         .accept(JSON)
         .contentType(JSON)
@@ -113,6 +163,38 @@ public class ExchangeEndpointIT extends BaseIT {
         .statusCode(400)
         .body("status", equalTo(400))
         .body("message", equalTo("The param 'userId' is required"))
+        .body("timestamp", notNullValue());
+  }
+
+  @Test
+  void givenNonNumericPageParameterWhenRequestCurrencyExchangeThenReturnErrorWithStatusCode400() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .queryParam("userId", "1234567890")
+        .queryParam("page", "page")
+        .when()
+        .get("/v1/exchanges")
+        .then()
+        .statusCode(400)
+        .body("status", equalTo(400))
+        .body("message", equalTo("The value of property 'page' is invalid. It should be an integer value."))
+        .body("timestamp", notNullValue());
+  }
+
+  @Test
+  void givenNonNumericPageSizeParameterWhenRequestCurrencyExchangeThenReturnErrorWithStatusCode400() {
+    given()
+        .accept(JSON)
+        .contentType(JSON)
+        .queryParam("userId", "1234567890")
+        .queryParam("pageSize", "pageSize")
+        .when()
+        .get("/v1/exchanges")
+        .then()
+        .statusCode(400)
+        .body("status", equalTo(400))
+        .body("message", equalTo("The value of property 'pageSize' is invalid. It should be an integer value."))
         .body("timestamp", notNullValue());
   }
 }

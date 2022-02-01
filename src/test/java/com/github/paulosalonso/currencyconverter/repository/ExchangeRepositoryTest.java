@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -156,10 +157,13 @@ class ExchangeRepositoryTest {
         .timestamp(Instant.now(Clock.systemUTC()))
         .build();
     final var flux = Flux.just(entity);
+    final var page = 0;
+    final var pageSize = 20;
 
-    when(exchangeTransactionEntityRepository.findAllByUserId(userId)).thenReturn(flux);
+    when(exchangeTransactionEntityRepository.findAllByUserId(userId, PageRequest.of(page, pageSize)))
+        .thenReturn(flux);
 
-    final var result = exchangeRepository.findAllTransactionsByUserId(userId);
+    final var result = exchangeRepository.findAllTransactionsByUserId(userId, page, pageSize);
 
     StepVerifier.create(result)
         .assertNext(exchangeTransaction ->
@@ -167,7 +171,7 @@ class ExchangeRepositoryTest {
         .expectComplete()
         .verify();
 
-    verify(exchangeTransactionEntityRepository).findAllByUserId(userId);
+    verify(exchangeTransactionEntityRepository).findAllByUserId(userId, PageRequest.of(page, pageSize));
     verifyNoMoreInteractions(exchangeTransactionEntityRepository);
     verifyNoInteractions(exchangeRateApiClient);
   }

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -26,17 +27,27 @@ public class SearchHandler {
 
   private final SearchService searchService;
   private final ErrorHandler errorHandler;
+  private final int defaultPageSize;
 
-  public SearchHandler(final SearchService searchService, final ErrorHandler errorHandler) {
+  public SearchHandler(
+      final SearchService searchService,
+      final ErrorHandler errorHandler,
+      @Value("${exchange.get.defaultPageSize}") int defaultPageSize) {
+
     this.searchService = searchService;
     this.errorHandler = errorHandler;
+    this.defaultPageSize = defaultPageSize;
   }
 
   @Operation(
       operationId = "findAllTransactionsByUserId",
       summary = "Get all transactions of an user",
       tags = { "Exchange" },
-      parameters = @Parameter(in = QUERY, name = "userId", required = true, description = "Id of user"),
+      parameters = {
+          @Parameter(in = QUERY, name = "userId", required = true, description = "Id of user"),
+          @Parameter(in = QUERY, name = "page", description = "Page number (zero based)", schema = @Schema(defaultValue = "0")),
+          @Parameter(in = QUERY, name = "pageSize", description = "Page size", schema = @Schema(defaultValue = "50"))
+      },
       responses = {
           @ApiResponse(responseCode = "200", description = "Transactions are returned", content = @Content(schema = @Schema(implementation = TransactionDto.class))),
           @ApiResponse(responseCode = "400", description = "User id was not sent", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -50,13 +61,35 @@ public class SearchHandler {
           new IllegalArgumentException(format("The param '%s' is required", USER_ID_PARAM)));
     }
 
-    final var transactionDtoFlux = searchService.findAllTransactionsByUserId(userIdOpt.get())
-        .map(TransactionDtoMapper::toTransactionDto);
+    try {
+      final var page = request.queryParam("page")
+          .map(value -> mapIntParameter(value, "page"))
+          .orElse(0);
 
-    return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(fromPublisher(transactionDtoFlux, TransactionDto.class))
-        .onErrorResume(errorHandler::handle);
+      final var pageSize = request.queryParam("pageSize")
+          .map(value -> mapIntParameter(value, "pageSize"))
+          .orElse(defaultPageSize);
+
+      final var transactionDtoFlux =
+          searchService.findAllTransactionsByUserId(userIdOpt.get(),page, pageSize)
+              .map(TransactionDtoMapper::toTransactionDto);
+
+      return ServerResponse.ok()
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(fromPublisher(transactionDtoFlux, TransactionDto.class))
+          .onErrorResume(errorHandler::handle);
+    } catch (IllegalArgumentException e) {
+      return errorHandler.handle(e);
+    }
+  }
+
+  private Integer mapIntParameter(String value, String parameter) {
+    try {
+      return Integer.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException(
+          format("The value of property '%s' is invalid. It should be an integer value.", parameter));
+    }
   }
 
 }

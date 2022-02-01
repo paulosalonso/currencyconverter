@@ -12,5 +12,5 @@ public interface ExchangePort {
 
   Mono<ExchangeTransaction> save(ExchangeTransaction transaction);
 
-  Flux<ExchangeTransaction> findAllTransactionsByUserId(String userId);
+  Flux<ExchangeTransaction> findAllTransactionsByUserId(String userId, int page, int pageSize);
 }
