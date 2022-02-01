@@ -24,7 +24,8 @@ public class ExchageService {
 
     return exchangePort.getCurrentExchangeRate(request)
         .map(exchangeRate -> createTransaction(request, exchangeRate))
-        .flatMap(exchangePort::save);
+        .flatMap(exchangePort::save)
+        .doOnSuccess(this::logTransaction);
   }
 
   private ExchangeTransaction createTransaction(
@@ -45,5 +46,9 @@ public class ExchageService {
 
   private BigDecimal convert(ExchangeRequest request, ExchangeRate exchangeRate) {
     return request.getAmount().multiply(exchangeRate.getRate());
+  }
+
+  private void logTransaction(ExchangeTransaction exchangeTransaction) {
+    log.info("Successful conversion: {}", exchangeTransaction);
   }
 }

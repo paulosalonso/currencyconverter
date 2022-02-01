@@ -17,6 +17,7 @@ public class SearchService {
   }
 
   public Flux<ExchangeTransaction> findAllTransactionsByUserId(final String userId, int page, int pageSize) {
+    log.info("Searching transactions page {} with size {} for user {}", page, pageSize, userId);
     return exchangePort.findAllTransactionsByUserId(userId, page, pageSize);
   }
 }
