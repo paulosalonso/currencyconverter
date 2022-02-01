@@ -16,7 +16,7 @@ public class SearchService {
     this.exchangePort = exchangePort;
   }
 
-  public Flux<ExchangeTransaction> findAllTransactionsByUserId(final String userId) {
-    return exchangePort.findAllTransactionsByUserId(userId);
+  public Flux<ExchangeTransaction> findAllTransactionsByUserId(final String userId, int page, int pageSize) {
+    return exchangePort.findAllTransactionsByUserId(userId, page, pageSize);
   }
 }

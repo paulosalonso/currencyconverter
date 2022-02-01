@@ -10,6 +10,7 @@ import com.github.paulosalonso.currencyconverter.repository.database.ExchangeTra
 import com.github.paulosalonso.currencyconverter.repository.http.ExchangeRateApiClient;
 import com.github.paulosalonso.currencyconverter.repository.mapper.ExchangeTransactionEntityMapper;
 import com.github.paulosalonso.currencyconverter.service.port.ExchangePort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,8 +44,8 @@ public class ExchangeRepository implements ExchangePort {
   }
 
   @Override
-  public Flux<ExchangeTransaction> findAllTransactionsByUserId(String userId) {
-    return exchangeTransactionEntityRepository.findAllByUserId(userId)
+  public Flux<ExchangeTransaction> findAllTransactionsByUserId(String userId, int page, int pageSize) {
+    return exchangeTransactionEntityRepository.findAllByUserId(userId, PageRequest.of(page, pageSize))
         .map(ExchangeTransactionEntityMapper::toModel);
   }
 }

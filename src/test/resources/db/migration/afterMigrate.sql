@@ -1,2 +1,4 @@
 delete from exchange_transaction;
 insert into exchange_transaction(id, user_id, from_currency, original_amount, to_currency, converted_amount, rate, timestamp) values ('c6ef37ae-e272-4fbf-be2d-3ab2aaf7d960', '1234567890', 'EUR', 10, 'BRL', 60.1, 6.01, '2022-01-30T19:30Z');
+insert into exchange_transaction(id, user_id, from_currency, original_amount, to_currency, converted_amount, rate, timestamp) values ('8ee80765-7bb8-44ea-8f30-8cd10f1c9f3c', '1234567890', 'EUR', 10, 'USD', 11.2, 1.12, '2022-01-30T19:30Z');
+insert into exchange_transaction(id, user_id, from_currency, original_amount, to_currency, converted_amount, rate, timestamp) values ('f71f4d9a-af52-4a6a-b99c-973defbbf670', '1234567890', 'EUR', 10, 'JPY', 1292.6, 129.26, '2022-01-30T19:30Z');

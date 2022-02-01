@@ -42,10 +42,12 @@ class SearchServiceTest {
         .dateTime(ZonedDateTime.now(UTC))
         .build();
     final var flux = Flux.just(exchangeTransaction);
+    final var page = 0;
+    final var pageSize = 20;
 
-    when(exchangePort.findAllTransactionsByUserId(userId)).thenReturn(flux);
+    when(exchangePort.findAllTransactionsByUserId(userId, page, pageSize)).thenReturn(flux);
 
-    final var result = searchService.findAllTransactionsByUserId(userId);
+    final var result = searchService.findAllTransactionsByUserId(userId, page, pageSize);
 
     StepVerifier.create(result)
         .assertNext(foundExchangeTransaction ->
@@ -53,7 +55,7 @@ class SearchServiceTest {
         .expectComplete()
         .verify();
 
-    verify(exchangePort).findAllTransactionsByUserId(userId);
+    verify(exchangePort).findAllTransactionsByUserId(userId, page, pageSize);
     verifyNoMoreInteractions(exchangePort);
   }
 
