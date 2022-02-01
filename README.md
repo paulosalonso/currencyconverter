@@ -31,7 +31,7 @@ Localmente os logs podem ser visualizados pelo terminal, com o comando abaixo:
 ## Integração Contínua
 
 [![Automated Testing](https://github.com/paulosalonso/currencyconverter/actions/workflows/automated-testing.yml/badge.svg)](https://github.com/paulosalonso/currencyconverter/actions/workflows/automated-testing.yml)
-[![Automated Testing](https://github.com/paulosalonso/currencyconverter/actions/workflows/automated-testing.yml/badge.svg)](https://github.com/paulosalonso/currencyconverter/actions/workflows/automated-testing.yml)
+[![Mutation Testing](https://github.com/paulosalonso/currencyconverter/actions/workflows/mutation-testing.yml/badge.svg)](https://github.com/paulosalonso/currencyconverter/actions/workflows/mutation-testing.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=paulosalonso_currencyconverter&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=paulosalonso_currencyconverter)
 
 O processo de integração contínua garante a qualidade permitindo que apenas código testado seja 
@@ -48,7 +48,7 @@ Além disso, é realizada uma análise estática com o [SonarCloud](https://sona
 O deploy no ambiente de homologação do Heroku é realizado ao criar uma pre-release.  
 O deploy no ambiente de produção do Heroku é realizado ao criar uma release.
 
-URL de homologação: https://currencyconverter-hmg.herokuapp.com
+URL de homologação: https://currencyconverter-hmg.herokuapp.com  
 URL de produção: https://currencyconverter-prd.herokuapp.com
 
 ## Consumo
