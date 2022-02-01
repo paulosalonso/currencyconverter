@@ -53,24 +53,15 @@ public class ExchangeRateApiClient {
   }
 
   private Mono<Throwable> handle4xxError(ClientResponse clientResponse) {
-    final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
-
-    return error.doOnSuccess(this::logError)
+    return clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class))
         .map(this::translateErrorMessage)
         .flatMap(Mono::error);
   }
 
   private Mono<Throwable> handle5xxError(ClientResponse clientResponse) {
-    final var error = clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class));
-
-    return error.doOnSuccess(this::logError)
+    return clientResponse.body(BodyExtractors.toMono(ExchangeRateErrorDto.class))
         .map(this::translateErrorMessage)
         .flatMap(Mono::error);
-  }
-
-  private void logError(ExchangeRateErrorDto exchangeRateErrorDto) {
-    log.error("Error getting exchange rate: {} - {}",
-        exchangeRateErrorDto.getError().getCode(), exchangeRateErrorDto.getError().getMessage());
   }
 
   private Throwable translateErrorMessage(ExchangeRateErrorDto errorDto) {
